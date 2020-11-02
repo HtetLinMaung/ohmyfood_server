@@ -1,0 +1,7 @@
+type RootQuery {
+  category: String!
+}
+
+schema {
+  query: RootQuery
+}

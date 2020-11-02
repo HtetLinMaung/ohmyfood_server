@@ -1,0 +1,8 @@
+type RootQuery {
+  hello: String!
+  baby: String
+}
+
+schema {
+  query: RootQuery
+}
