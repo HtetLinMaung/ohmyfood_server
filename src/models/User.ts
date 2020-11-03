@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeleteSchema } from "../utils/mongoose-tools";
 
 const userSchema = new Schema(
   {
@@ -22,6 +23,12 @@ const userSchema = new Schema(
       type: String,
       default: "customer",
     },
+    orders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "orders",
+      },
+    ],
     deletedAt: Date,
   },
   {
@@ -29,8 +36,6 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.statics.findWithoutDeleted = function (filter: any) {
-  return this.find({ ...filter, deletedAt: { $exists: false } });
-};
+softDeleteSchema(userSchema);
 
 export default model("users", userSchema);
