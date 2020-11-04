@@ -8,6 +8,13 @@ export const importSchema = (filePath: string) =>
 export const mergeSchema = (schemaArray: string[] = []) => {
   let gql = "schema { query: RootQuery } type RootQuery { ";
   for (const schema of schemaArray) {
+    if (schema.match(/mutation:\s+RootMutation/)) {
+      gql =
+        "schema { query: RootQuery, mutation: RootMutation } type RootQuery { ";
+      break;
+    }
+  }
+  for (const schema of schemaArray) {
     const match = schema.match(/type\s+RootQuery\s+{\s+((\w+:\s+\w+!?\s+)+)/);
     if (match) {
       gql += match[1];

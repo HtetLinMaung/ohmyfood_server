@@ -1,8 +1,28 @@
+input UserInput {
+  username: String!
+  email: String!
+  password: String!
+  phone: String!
+}
+
+type User {
+  username: String!
+  email: String!
+  password: String!
+  phone: String!
+  role: String!
+}
+
 type RootQuery {
   hello: String!
   baby: String
 }
 
+type RootMutation {
+  signUp(userInput: UserInput): User!
+}
+
 schema {
   query: RootQuery
+  mutation: RootMutation
 }
