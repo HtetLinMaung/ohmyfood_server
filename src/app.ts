@@ -16,6 +16,16 @@ app.use(
     schema,
     rootValue: resolver,
     graphiql: true,
+    formatError: (err) => {
+      const originalError: any = err.originalError;
+      if (!originalError) {
+        return err;
+      }
+      const data = originalError.data;
+      const message = err.message;
+      const code = originalError.code || 500;
+      return { message, status: code, data };
+    },
   })
 );
 

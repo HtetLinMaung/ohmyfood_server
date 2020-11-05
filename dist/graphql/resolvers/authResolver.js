@@ -40,23 +40,77 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var validator_1 = __importDefault(require("validator"));
+var Otp_1 = __importDefault(require("../../models/Otp"));
+var User_1 = __importDefault(require("../../models/User"));
+var bcryptjs_1 = __importDefault(require("bcryptjs"));
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.default = {
     signUp: function (_a, _) {
         var userInput = _a.userInput;
         return __awaiter(void 0, void 0, void 0, function () {
+            var errors, isPhoneValid, error, hashedPassword, userDto, user, token;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        errors = [];
+                        if (validator_1.default.isEmpty(userInput.username)) {
+                            errors.push({ message: "Usernam is invalid!" });
+                        }
+                        if (!validator_1.default.isEmail(userInput.email)) {
+                            errors.push({ message: "Email is invalid!" });
+                        }
+                        if (!validator_1.default.isLength(userInput.password, { min: 6 })) {
+                            errors.push({ message: "Password too short!" });
+                        }
+                        if (!validator_1.default.isLength(userInput.phone, { max: 11, min: 9 })) {
+                            errors.push({ message: "Phone number is invalid!" });
+                        }
+                        return [4 /*yield*/, verifyOtp(userInput)];
+                    case 1:
+                        isPhoneValid = _b.sent();
+                        if (!isPhoneValid) {
+                            errors.push({ message: "Otp code is invalid!" });
+                        }
+                        if (errors.length > 0) {
+                            error = new Error("Invalid input.");
+                            error.data = errors;
+                            error.code = 422;
+                            throw error;
+                        }
+                        return [4 /*yield*/, bcryptjs_1.default.hash(userInput.password, 12)];
+                    case 2:
+                        hashedPassword = _b.sent();
+                        userDto = {
+                            email: userInput.email,
+                            password: hashedPassword,
+                            phone: userInput.phone,
+                            username: userInput.username,
+                        };
+                        user = new User_1.default(userDto);
+                        return [4 /*yield*/, user.save()];
+                    case 3:
+                        _b.sent();
+                        token = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.SECRET || "secret", {
+                            expiresIn: "1d",
+                        });
+                        return [2 /*return*/, {
+                                token: token,
+                                user: user,
+                            }];
+                }
+            });
+        });
+    },
+    login: function (_a, _) {
+        var phone = _a.phone, password = _a.password;
+        return __awaiter(void 0, void 0, void 0, function () {
             var errors, error;
             return __generator(this, function (_b) {
                 errors = [];
-                if (validator_1.default.isEmpty(userInput.email)) {
-                    errors.push({ message: "Usernam is invalid!" });
-                }
-                if (!validator_1.default.isEmail(userInput.email)) {
-                    errors.push({ message: "Email is invalid!" });
-                }
-                if (!validator_1.default.isLength(userInput.password, { min: 6 })) {
+                if (!validator_1.default.isLength(password, { min: 6 })) {
                     errors.push({ message: "Password too short!" });
                 }
-                if (!validator_1.default.isLength(userInput.phone, { max: 11, min: 9 })) {
+                if (!validator_1.default.isLength(phone, { max: 11, min: 9 })) {
                     errors.push({ message: "Phone number is invalid!" });
                 }
                 if (errors.length > 0) {
@@ -69,5 +123,62 @@ exports.default = {
             });
         });
     },
+    getOtp: function (_a, _) {
+        var phone = _a.phone;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var errors, error, otp, newOtp;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        errors = [];
+                        if (!validator_1.default.isLength(phone, { max: 11, min: 9 })) {
+                            errors.push({ message: "Phone number is invalid!" });
+                        }
+                        if (errors.length > 0) {
+                            error = new Error("Invalid input.");
+                            error.data = errors;
+                            error.code = 422;
+                            throw error;
+                        }
+                        return [4 /*yield*/, Otp_1.default.findOne({ phone: phone })];
+                    case 1:
+                        otp = _b.sent();
+                        if (!otp) return [3 /*break*/, 3];
+                        otp.otpCode = Math.floor(1000 + Math.random() * 9000).toString();
+                        return [4 /*yield*/, otp.save()];
+                    case 2:
+                        _b.sent();
+                        return [3 /*break*/, 5];
+                    case 3:
+                        newOtp = new Otp_1.default({ phone: phone });
+                        return [4 /*yield*/, newOtp.save()];
+                    case 4:
+                        _b.sent();
+                        _b.label = 5;
+                    case 5: return [2 /*return*/, { message: "OK" }];
+                }
+            });
+        });
+    },
+};
+var verifyOtp = function (_a) {
+    var otpCode = _a.otpCode, phone = _a.phone;
+    return __awaiter(void 0, void 0, void 0, function () {
+        var otp;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, Otp_1.default.findOne({ phone: phone })];
+                case 1:
+                    otp = _b.sent();
+                    if (!otp || otp.otpCode !== otpCode) {
+                        return [2 /*return*/, false];
+                    }
+                    return [4 /*yield*/, Otp_1.default.findByIdAndRemove(otp._id)];
+                case 2:
+                    _b.sent();
+                    return [2 /*return*/, true];
+            }
+        });
+    });
 };
 //# sourceMappingURL=authResolver.js.map

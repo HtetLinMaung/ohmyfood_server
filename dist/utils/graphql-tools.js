@@ -23,7 +23,8 @@ exports.mergeSchema = function (schemaArray) {
     }
     for (var _a = 0, schemaArray_2 = schemaArray; _a < schemaArray_2.length; _a++) {
         var schema = schemaArray_2[_a];
-        var match = schema.match(/type\s+RootQuery\s+{\s+((\w+:\s+\w+!?\s+)+)/);
+        console.log(schema.match(/type\s+RootQuery\s+{\s+((\w+\(\w+:\s+\w+!?\):\s+\w+!?\s+)+)}/));
+        var match = schema.match(/type\s+RootQuery\s+{\s+((\w+:\s+\w+!?\s+)+)}/);
         if (match) {
             gql += match[1];
         }

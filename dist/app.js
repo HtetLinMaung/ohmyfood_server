@@ -16,6 +16,16 @@ app.use("/graphql", express_graphql_1.graphqlHTTP({
     schema: schema_1.default,
     rootValue: resolver_1.default,
     graphiql: true,
+    formatError: function (err) {
+        var originalError = err.originalError;
+        if (!originalError) {
+            return err;
+        }
+        var data = originalError.data;
+        var message = err.message;
+        var code = originalError.code || 500;
+        return { message: message, status: code, data: data };
+    },
 }));
 mongoose_1.default
     .connect(process.env.DATABASE || "", {

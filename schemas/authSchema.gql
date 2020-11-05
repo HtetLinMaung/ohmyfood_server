@@ -3,6 +3,7 @@ input UserInput {
   email: String!
   password: String!
   phone: String!
+  otpCode: String!
 }
 
 type User {
@@ -11,15 +12,27 @@ type User {
   password: String!
   phone: String!
   role: String!
+  createdAt: String!
+  updatedAt: String!
+  deletedAt: String!
+}
+
+type UserResponse {
+  token: String!
+  userId: String!
+}
+
+type Result {
+  message: String!
 }
 
 type RootQuery {
-  hello: String!
-  baby: String
+  getOtp(phone: String!): Result!
+  login(phone: String!, password: String!): UserResponse!
 }
 
 type RootMutation {
-  signUp(userInput: UserInput): User!
+  signUp(userInput: UserInput): UserResponse!
 }
 
 schema {

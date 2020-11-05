@@ -15,7 +15,12 @@ export const mergeSchema = (schemaArray: string[] = []) => {
     }
   }
   for (const schema of schemaArray) {
-    const match = schema.match(/type\s+RootQuery\s+{\s+((\w+:\s+\w+!?\s+)+)/);
+    console.log(
+      schema.match(
+        /type\s+RootQuery\s+{\s+((\w+\(\w+:\s+\w+!?\):\s+\w+!?\s+)+)}/
+      )
+    );
+    const match = schema.match(/type\s+RootQuery\s+{\s+((\w+:\s+\w+!?\s+)+)}/);
     if (match) {
       gql += match[1];
     }
