@@ -16,7 +16,7 @@ app.use("/graphql", express_graphql_1.graphqlHTTP({
     schema: schema_1.default,
     rootValue: resolver_1.default,
     graphiql: true,
-    formatError: function (err) {
+    customFormatErrorFn: function (err) {
         var originalError = err.originalError;
         if (!originalError) {
             return err;

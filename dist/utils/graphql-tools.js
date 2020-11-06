@@ -23,18 +23,26 @@ exports.mergeSchema = function (schemaArray) {
     }
     for (var _a = 0, schemaArray_2 = schemaArray; _a < schemaArray_2.length; _a++) {
         var schema = schemaArray_2[_a];
-        console.log(schema.match(/type\s+RootQuery\s+{\s+((\w+\(\w+:\s+\w+!?\):\s+\w+!?\s+)+)}/));
-        var match = schema.match(/type\s+RootQuery\s+{\s+((\w+:\s+\w+!?\s+)+)}/);
+        var match = schema.match(/type\s+RootQuery\s+{((\s+\w+(\(.+\))?:\s+\w+!?)+\s+)}/);
+        if (match) {
+            gql += match[1];
+        }
+    }
+    gql += "} type RootMutation { ";
+    for (var _b = 0, schemaArray_3 = schemaArray; _b < schemaArray_3.length; _b++) {
+        var schema = schemaArray_3[_b];
+        var match = schema.match(/type\s+RootMutation\s+{((\s+\w+(\(.+\))?:\s+\w+!?)+\s+)}/);
         if (match) {
             gql += match[1];
         }
     }
     gql += "} ";
-    for (var _b = 0, schemaArray_3 = schemaArray; _b < schemaArray_3.length; _b++) {
-        var schema = schemaArray_3[_b];
+    for (var _c = 0, schemaArray_4 = schemaArray; _c < schemaArray_4.length; _c++) {
+        var schema = schemaArray_4[_c];
         gql += schema
-            .replace(/type\s+RootQuery\s+{\s+((\w+:\s+\w+!?\s+)+)}/, "")
-            .replace(/schema\s+{\s+((\w+:\s+\w+!?\s+)+)}/, "");
+            .replace(/type\s+RootQuery\s+{((\s+\w+(\(.+\))?:\s+\w+!?)+\s+)}/, "")
+            .replace(/schema\s+{\s+((\w+:\s+\w+!?\s+)+)}/, "")
+            .replace(/type\s+RootMutation\s+{((\s+\w+(\(.+\))?:\s+\w+!?)+\s+)}/, "");
     }
     console.log(gql);
     return gql;

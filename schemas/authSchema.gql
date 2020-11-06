@@ -7,6 +7,7 @@ input UserInput {
 }
 
 type User {
+  _id: String!
   username: String!
   email: String!
   password: String!
@@ -19,7 +20,7 @@ type User {
 
 type UserResponse {
   token: String!
-  userId: String!
+  user: User!
 }
 
 type Result {

@@ -31,6 +31,12 @@ export default {
       error.code = 422;
       throw error;
     }
+    const oldUser = await User.findOne({ phone: userInput.phone });
+    if (oldUser) {
+      const error: any = new Error("User already exists!");
+      error.code = 200;
+      throw error;
+    }
     const hashedPassword = await bcrypt.hash(userInput.password, 12);
     const userDto: UserDto = {
       email: userInput.email,
@@ -47,6 +53,7 @@ export default {
         expiresIn: "1d",
       }
     );
+
     return {
       token,
       user,
@@ -69,6 +76,31 @@ export default {
       error.code = 422;
       throw error;
     }
+    const user = await User.findOne({ phone });
+    if (!user) {
+      const error: any = new Error("User not found!");
+      error.code = 404;
+      throw error;
+    }
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      const error: any = new Error("Password do not match!");
+      error.code = 401;
+      throw error;
+    }
+    const token = jwt.sign(
+      {
+        userId: user._id,
+      },
+      process.env.SECRET || "secret",
+      {
+        expiresIn: "1d",
+      }
+    );
+    return {
+      token,
+      user,
+    };
   },
   getOtp: async ({ phone }: { phone: string }, _: Request) => {
     const errors = [];

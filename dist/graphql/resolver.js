@@ -15,5 +15,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var authResolver_1 = __importDefault(require("./resolvers/authResolver"));
-exports.default = __assign({}, authResolver_1.default);
+var categoryResolver_1 = __importDefault(require("./resolvers/categoryResolver"));
+exports.default = __assign(__assign({}, authResolver_1.default), categoryResolver_1.default);
 //# sourceMappingURL=resolver.js.map

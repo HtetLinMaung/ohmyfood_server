@@ -16,7 +16,7 @@ app.use(
     schema,
     rootValue: resolver,
     graphiql: true,
-    formatError: (err) => {
+    customFormatErrorFn: (err) => {
       const originalError: any = err.originalError;
       if (!originalError) {
         return err;

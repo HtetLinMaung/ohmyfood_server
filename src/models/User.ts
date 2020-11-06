@@ -1,5 +1,16 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 import { softDeleteSchema } from "../utils/mongoose-tools";
+
+export interface IUser extends Document {
+  username: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: string;
+  deletedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const userSchema = new Schema(
   {
@@ -38,4 +49,4 @@ const userSchema = new Schema(
 
 softDeleteSchema(userSchema);
 
-export default model("users", userSchema);
+export default model<IUser>("users", userSchema);

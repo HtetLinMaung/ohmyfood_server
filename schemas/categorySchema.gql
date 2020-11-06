@@ -1,7 +1,20 @@
+type Category {
+  _id: String!
+}
+
+input CategoryInput {
+  name: String!
+}
+
 type RootQuery {
   category: String!
 }
 
+type RootMutation {
+  createCategory(categoryInput: CategoryInput): Category!
+}
+
 schema {
   query: RootQuery
+  mutation: RootMutation
 }

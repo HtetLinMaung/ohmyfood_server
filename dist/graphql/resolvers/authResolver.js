@@ -48,7 +48,7 @@ exports.default = {
     signUp: function (_a, _) {
         var userInput = _a.userInput;
         return __awaiter(void 0, void 0, void 0, function () {
-            var errors, isPhoneValid, error, hashedPassword, userDto, user, token;
+            var errors, isPhoneValid, error, oldUser, error, hashedPassword, userDto, user, token;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -77,8 +77,16 @@ exports.default = {
                             error.code = 422;
                             throw error;
                         }
-                        return [4 /*yield*/, bcryptjs_1.default.hash(userInput.password, 12)];
+                        return [4 /*yield*/, User_1.default.findOne({ phone: userInput.phone })];
                     case 2:
+                        oldUser = _b.sent();
+                        if (oldUser) {
+                            error = new Error("User already exists!");
+                            error.code = 200;
+                            throw error;
+                        }
+                        return [4 /*yield*/, bcryptjs_1.default.hash(userInput.password, 12)];
+                    case 3:
                         hashedPassword = _b.sent();
                         userDto = {
                             email: userInput.email,
@@ -88,7 +96,7 @@ exports.default = {
                         };
                         user = new User_1.default(userDto);
                         return [4 /*yield*/, user.save()];
-                    case 3:
+                    case 4:
                         _b.sent();
                         token = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.SECRET || "secret", {
                             expiresIn: "1d",
@@ -104,22 +112,49 @@ exports.default = {
     login: function (_a, _) {
         var phone = _a.phone, password = _a.password;
         return __awaiter(void 0, void 0, void 0, function () {
-            var errors, error;
+            var errors, error, user, error, match, error, token;
             return __generator(this, function (_b) {
-                errors = [];
-                if (!validator_1.default.isLength(password, { min: 6 })) {
-                    errors.push({ message: "Password too short!" });
+                switch (_b.label) {
+                    case 0:
+                        errors = [];
+                        if (!validator_1.default.isLength(password, { min: 6 })) {
+                            errors.push({ message: "Password too short!" });
+                        }
+                        if (!validator_1.default.isLength(phone, { max: 11, min: 9 })) {
+                            errors.push({ message: "Phone number is invalid!" });
+                        }
+                        if (errors.length > 0) {
+                            error = new Error("Invalid input.");
+                            error.data = errors;
+                            error.code = 422;
+                            throw error;
+                        }
+                        return [4 /*yield*/, User_1.default.findOne({ phone: phone })];
+                    case 1:
+                        user = _b.sent();
+                        if (!user) {
+                            error = new Error("User not found!");
+                            error.code = 404;
+                            throw error;
+                        }
+                        return [4 /*yield*/, bcryptjs_1.default.compare(password, user.password)];
+                    case 2:
+                        match = _b.sent();
+                        if (!match) {
+                            error = new Error("Password do not match!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        token = jsonwebtoken_1.default.sign({
+                            userId: user._id,
+                        }, process.env.SECRET || "secret", {
+                            expiresIn: "1d",
+                        });
+                        return [2 /*return*/, {
+                                token: token,
+                                user: user,
+                            }];
                 }
-                if (!validator_1.default.isLength(phone, { max: 11, min: 9 })) {
-                    errors.push({ message: "Phone number is invalid!" });
-                }
-                if (errors.length > 0) {
-                    error = new Error("Invalid input.");
-                    error.data = errors;
-                    error.code = 422;
-                    throw error;
-                }
-                return [2 /*return*/];
             });
         });
     },
