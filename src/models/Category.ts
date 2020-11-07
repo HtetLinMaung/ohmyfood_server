@@ -1,5 +1,22 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 import { softDeleteSchema } from "../utils/mongoose-tools";
+
+interface ICategory extends Document {
+  name: string;
+  price: number;
+  discountPercent: number;
+  availableTime: {
+    openHour: string;
+    closeHour: string;
+  };
+  imageUrl: string;
+  tags: string[];
+  types: string[];
+  menus: string[];
+  deletedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const categorySchema = new Schema(
   {
@@ -49,4 +66,4 @@ const categorySchema = new Schema(
 
 softDeleteSchema(categorySchema);
 
-export default model("categories", categorySchema);
+export default model<ICategory>("categories", categorySchema);

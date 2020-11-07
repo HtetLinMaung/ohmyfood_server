@@ -8,10 +8,32 @@ var express_graphql_1 = require("express-graphql");
 var mongoose_1 = __importDefault(require("mongoose"));
 var schema_1 = __importDefault(require("./graphql/schema"));
 var resolver_1 = __importDefault(require("./graphql/resolver"));
+var auth_1 = __importDefault(require("./middlewares/auth"));
+var storage_1 = __importDefault(require("./storage"));
+var multer_1 = __importDefault(require("multer"));
+var multer_s3_1 = __importDefault(require("multer-s3"));
 var dotenv_1 = __importDefault(require("dotenv"));
+var uploadImage_1 = __importDefault(require("./middlewares/uploadImage"));
 dotenv_1.default.config();
 var PORT = process.env.PORT || 3000;
 var app = express_1.default();
+var upload = multer_1.default({
+    storage: multer_s3_1.default({
+        s3: storage_1.default,
+        bucket: process.env.S3_BUCKET_NAME || "bucket",
+        acl: "public-read",
+        metadata: function (_req, file, cb) {
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: function (_req, _file, cb) {
+            cb(null, Date.now().toString());
+        },
+    }),
+});
+app.use(upload.single("image"));
+app.use(express_1.default.json());
+app.use(auth_1.default);
+app.post("/upload-image", uploadImage_1.default);
 app.use("/graphql", express_graphql_1.graphqlHTTP({
     schema: schema_1.default,
     rootValue: resolver_1.default,

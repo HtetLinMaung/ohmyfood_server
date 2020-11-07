@@ -40,31 +40,86 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var validator_1 = __importDefault(require("validator"));
+var User_1 = __importDefault(require("../../models/User"));
+var Category_1 = __importDefault(require("../../models/Category"));
 exports.default = {
     createCategory: function (_a, req) {
         var categoryInput = _a.categoryInput;
         return __awaiter(void 0, void 0, void 0, function () {
-            var error, errors, error;
+            var error, user, error, errors, error, category;
             return __generator(this, function (_b) {
-                if (req.isAuth) {
-                    error = new Error("Not Authenticated");
-                    error.code = 401;
-                    throw error;
+                switch (_b.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        return [4 /*yield*/, User_1.default.findById(req.userId)];
+                    case 1:
+                        user = (_b.sent());
+                        if (user.role == "customer") {
+                            error = new Error("Unauthorized!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        errors = [];
+                        if (validator_1.default.isEmpty(categoryInput.name)) {
+                            errors.push({ message: "Category name is invalid!" });
+                        }
+                        if (validator_1.default.isNumeric(categoryInput.price.toString())) {
+                            errors.push({ message: "Price is invalid!" });
+                        }
+                        if (validator_1.default.isNumeric(categoryInput.discountPercent.toString())) {
+                            errors.push({ message: "Discount percent is invalid!" });
+                        }
+                        if (validator_1.default.isEmpty(categoryInput.openHour)) {
+                            errors.push({ message: "Open Hour is invalid!" });
+                        }
+                        if (validator_1.default.isEmpty(categoryInput.closeHour)) {
+                            errors.push({ message: "Close Hour is invalid!" });
+                        }
+                        if (validator_1.default.isEmpty(categoryInput.imageUrl)) {
+                            errors.push({ message: "Image is invalid!" });
+                        }
+                        if (!Array.isArray(categoryInput.tags) ||
+                            (categoryInput.tags.length > 0 &&
+                                !categoryInput.tags.every(function (v) { return typeof v == "string"; }))) {
+                            errors.push({ message: "Tags are invalid!" });
+                        }
+                        if (!Array.isArray(categoryInput.menus) ||
+                            (categoryInput.menus.length > 0 &&
+                                !categoryInput.menus.every(function (v) { return typeof v == "string"; }))) {
+                            errors.push({ message: "Menus are invalid!" });
+                        }
+                        if (!Array.isArray(categoryInput.types) ||
+                            (categoryInput.types.length > 0 &&
+                                !categoryInput.types.every(function (v) { return typeof v == "string"; }))) {
+                            errors.push({ message: "Types are invalid!" });
+                        }
+                        if (errors.length > 0) {
+                            error = new Error("Invalid input!");
+                            error.code = 422;
+                            error.data = errors;
+                            throw error;
+                        }
+                        category = new Category_1.default();
+                        category.name = categoryInput.name;
+                        category.price = categoryInput.price;
+                        category.discountPercent = categoryInput.discountPercent;
+                        category.availableTime = {
+                            openHour: categoryInput.openHour,
+                            closeHour: categoryInput.closeHour,
+                        };
+                        category.imageUrl = categoryInput.imageUrl;
+                        category.tags = categoryInput.tags;
+                        category.types = categoryInput.types;
+                        category.menus = categoryInput.menus;
+                        return [4 /*yield*/, category.save()];
+                    case 2:
+                        _b.sent();
+                        return [2 /*return*/, category];
                 }
-                errors = [];
-                if (validator_1.default.isEmpty(categoryInput.name)) {
-                    errors.push({ message: "Category name is invalid!" });
-                }
-                if (validator_1.default.isNumeric(categoryInput.price.toString())) {
-                    errors.push({ message: "Price is invalid!" });
-                }
-                if (errors.length > 0) {
-                    error = new Error("Invalid input!");
-                    error.code = 422;
-                    error.data = errors;
-                    throw error;
-                }
-                return [2 /*return*/];
             });
         });
     },
