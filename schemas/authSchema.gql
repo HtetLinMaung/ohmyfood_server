@@ -15,7 +15,7 @@ type User {
   role: String!
   createdAt: String!
   updatedAt: String!
-  deletedAt: String!
+  deletedAt: String
 }
 
 type UserResponse {

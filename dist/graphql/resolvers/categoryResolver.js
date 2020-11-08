@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -43,10 +54,10 @@ var validator_1 = __importDefault(require("validator"));
 var User_1 = __importDefault(require("../../models/User"));
 var Category_1 = __importDefault(require("../../models/Category"));
 exports.default = {
-    createCategory: function (_a, req) {
-        var categoryInput = _a.categoryInput;
+    categories: function (_a, req) {
+        var page = _a.page, perPage = _a.perPage;
         return __awaiter(void 0, void 0, void 0, function () {
-            var error, user, error, errors, error, category;
+            var error, categories, totalRows;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -55,22 +66,63 @@ exports.default = {
                             error.code = 401;
                             throw error;
                         }
+                        return [4 /*yield*/, Category_1.default.find().countDocuments()];
+                    case 1:
+                        totalRows = _b.sent();
+                        if (!(!page || !perPage || (!page && !perPage))) return [3 /*break*/, 3];
+                        return [4 /*yield*/, Category_1.default.find()];
+                    case 2:
+                        categories = _b.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, Category_1.default.find()
+                            .skip((page - 1) * perPage)
+                            .limit(perPage)];
+                    case 4:
+                        categories = _b.sent();
+                        _b.label = 5;
+                    case 5: return [2 /*return*/, {
+                            page: page,
+                            perPage: perPage,
+                            totalRows: totalRows,
+                            categories: categories.map(function (category) {
+                                var _a;
+                                return (__assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_a = category.deletedAt) === null || _a === void 0 ? void 0 : _a.toISOString() }));
+                            }),
+                        }];
+                }
+            });
+        });
+    },
+    createCategory: function (_a, req) {
+        var categoryInput = _a.categoryInput;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var error, user, error, errors, error, category;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
                         return [4 /*yield*/, User_1.default.findById(req.userId)];
                     case 1:
-                        user = (_b.sent());
+                        user = (_c.sent());
                         if (user.role == "customer") {
                             error = new Error("Unauthorized!");
                             error.code = 401;
                             throw error;
                         }
                         errors = [];
+                        console.log(categoryInput);
                         if (validator_1.default.isEmpty(categoryInput.name)) {
                             errors.push({ message: "Category name is invalid!" });
                         }
-                        if (validator_1.default.isNumeric(categoryInput.price.toString())) {
+                        if (!validator_1.default.isNumeric(categoryInput.price.toString())) {
                             errors.push({ message: "Price is invalid!" });
                         }
-                        if (validator_1.default.isNumeric(categoryInput.discountPercent.toString())) {
+                        if (!validator_1.default.isNumeric(categoryInput.discountPercent.toString())) {
                             errors.push({ message: "Discount percent is invalid!" });
                         }
                         if (validator_1.default.isEmpty(categoryInput.openHour)) {
@@ -117,8 +169,8 @@ exports.default = {
                         category.menus = categoryInput.menus;
                         return [4 /*yield*/, category.save()];
                     case 2:
-                        _b.sent();
-                        return [2 /*return*/, category];
+                        _c.sent();
+                        return [2 /*return*/, __assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_b = category.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
                 }
             });
         });

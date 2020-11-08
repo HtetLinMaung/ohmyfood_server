@@ -39,39 +39,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var storage_1 = __importDefault(require("../storage"));
-exports.default = (function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var error;
+var User_1 = __importDefault(require("../models/User"));
+exports.default = (function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var error, user, error, err_1;
     return __generator(this, function (_a) {
-        try {
-            if (!req.file) {
-                error = new Error("File is empty!");
-                error.code = 422;
-                throw error;
-            }
-            if (req.body.oldImage) {
-                clearImage(req.body.oldImage, function (err, data) {
-                    console.log(data);
-                    if (err) {
-                        console.log(err);
-                        res.status(500).json({ message: "Something went wrong!" });
-                    }
-                });
-            }
-            res.json({ imageUrl: req.file.location });
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 2, , 3]);
+                if (!req.isAuth) {
+                    error = new Error("Not Authenticated!");
+                    error.code = 401;
+                    throw error;
+                }
+                return [4 /*yield*/, User_1.default.findById(req.userId)];
+            case 1:
+                user = (_a.sent());
+                if (user.role == "customer") {
+                    error = new Error("Unauthorized!");
+                    error.code = 401;
+                    throw error;
+                }
+                next();
+                return [3 /*break*/, 3];
+            case 2:
+                err_1 = _a.sent();
+                res.status(err_1.code).json({ message: err_1.message });
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
-        catch (err) {
-            res.status(err.code).json({ message: err.message });
-        }
-        return [2 /*return*/];
     });
 }); });
-var clearImage = function (path, cb) {
-    var pathArray = path.split("/");
-    var Key = pathArray[pathArray.length - 1];
-    storage_1.default.deleteObject({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: Key,
-    }, cb);
-};
-//# sourceMappingURL=uploadImage.js.map
+//# sourceMappingURL=beforeImageUpload.js.map

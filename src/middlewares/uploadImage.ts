@@ -1,20 +1,8 @@
-import User from "../models/User";
 import { Response } from "express";
 import s3 from "../storage";
 
 export default async (req: any, res: Response) => {
   try {
-    if (!req.isAuth) {
-      const error: any = new Error("Not Authenticated!");
-      error.code = 401;
-      throw error;
-    }
-    const user = (await User.findById(req.userId))!;
-    if (user.role == "customer") {
-      const error: any = new Error("Unauthorized!");
-      error.code = 401;
-      throw error;
-    }
     if (!req.file) {
       const error: any = new Error("File is empty!");
       error.code = 422;
@@ -24,6 +12,7 @@ export default async (req: any, res: Response) => {
       clearImage(req.body.oldImage, (err: any, data: any) => {
         console.log(data);
         if (err) {
+          console.log(err);
           res.status(500).json({ message: "Something went wrong!" });
         }
       });

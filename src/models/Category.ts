@@ -2,6 +2,7 @@ import { Schema, model, Document } from "mongoose";
 import { softDeleteSchema } from "../utils/mongoose-tools";
 
 interface ICategory extends Document {
+  _doc: any;
   name: string;
   price: number;
   discountPercent: number;
@@ -13,9 +14,9 @@ interface ICategory extends Document {
   tags: string[];
   types: string[];
   menus: string[];
-  deletedAt: string;
-  createdAt: string;
-  updatedAt: string;
+  deletedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const categorySchema = new Schema(

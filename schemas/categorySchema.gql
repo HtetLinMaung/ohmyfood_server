@@ -1,13 +1,41 @@
 type Category {
   _id: String!
+  name: String!
+  price: Float!
+  discountPercent: Float!
+  openHour: String!
+  closeHour: String!
+  imageUrl: String!
+  tags: [String!]
+  types: [String!]
+  menus: [String!]
+  deletedAt: String
+  createdAt: String!
+  updatedAt: String!
 }
 
 input CategoryInput {
   name: String!
+  price: Float!
+  discountPercent: Float!
+  openHour: String!
+  closeHour: String!
+  imageUrl: String!
+  tags: [String!]
+  types: [String!]
+  menus: [String!]
+}
+
+type Categories {
+  page: Int!
+  perPage: Int!
+  totalRows: Int!
+  categories: [Category!]
 }
 
 type RootQuery {
-  category: String!
+  categories(page: Int!, perPage: Int!): Categories
+  category(id: ID!): Category!
 }
 
 type RootMutation {

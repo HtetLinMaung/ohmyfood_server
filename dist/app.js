@@ -14,6 +14,7 @@ var multer_1 = __importDefault(require("multer"));
 var multer_s3_1 = __importDefault(require("multer-s3"));
 var dotenv_1 = __importDefault(require("dotenv"));
 var uploadImage_1 = __importDefault(require("./middlewares/uploadImage"));
+var beforeImageUpload_1 = __importDefault(require("./middlewares/beforeImageUpload"));
 dotenv_1.default.config();
 var PORT = process.env.PORT || 3000;
 var app = express_1.default();
@@ -30,9 +31,10 @@ var upload = multer_1.default({
         },
     }),
 });
-app.use(upload.single("image"));
 app.use(express_1.default.json());
 app.use(auth_1.default);
+app.use("/upload-image", beforeImageUpload_1.default);
+app.use(upload.single("image"));
 app.post("/upload-image", uploadImage_1.default);
 app.use("/graphql", express_graphql_1.graphqlHTTP({
     schema: schema_1.default,

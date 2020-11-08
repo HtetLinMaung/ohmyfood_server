@@ -4,6 +4,37 @@ import User from "../../models/User";
 import Category from "../../models/Category";
 
 export default {
+  categories: async (
+    { page, perPage }: { page: number; perPage: number },
+    req: any
+  ) => {
+    if (!req.isAuth) {
+      const error: any = new Error("Not Authenticated!");
+      error.code = 401;
+      throw error;
+    }
+    let categories;
+    const totalRows = await Category.find().countDocuments();
+    if (!page || !perPage || (!page && !perPage)) {
+      categories = await Category.find();
+    } else {
+      categories = await Category.find()
+        .skip((page - 1) * perPage)
+        .limit(perPage);
+    }
+
+    return {
+      page,
+      perPage,
+      totalRows,
+      categories: categories.map((category) => ({
+        ...category._doc,
+        createdAt: category.createdAt.toISOString(),
+        updatedAt: category.updatedAt.toISOString(),
+        deletedAt: category.deletedAt?.toISOString(),
+      })),
+    };
+  },
   createCategory: async (
     { categoryInput }: { categoryInput: CategoryInput },
     req: any
@@ -20,13 +51,14 @@ export default {
       throw error;
     }
     const errors = [];
+    console.log(categoryInput);
     if (validator.isEmpty(categoryInput.name)) {
       errors.push({ message: "Category name is invalid!" });
     }
-    if (validator.isNumeric(categoryInput.price.toString())) {
+    if (!validator.isNumeric(categoryInput.price.toString())) {
       errors.push({ message: "Price is invalid!" });
     }
-    if (validator.isNumeric(categoryInput.discountPercent.toString())) {
+    if (!validator.isNumeric(categoryInput.discountPercent.toString())) {
       errors.push({ message: "Discount percent is invalid!" });
     }
     if (validator.isEmpty(categoryInput.openHour)) {
@@ -79,6 +111,11 @@ export default {
     category.types = categoryInput.types;
     category.menus = categoryInput.menus;
     await category.save();
-    return category;
+    return {
+      ...category._doc,
+      createdAt: category.createdAt.toISOString(),
+      updatedAt: category.updatedAt.toISOString(),
+      deletedAt: category.deletedAt?.toISOString(),
+    };
   },
 };
