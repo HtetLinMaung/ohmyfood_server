@@ -40,6 +40,8 @@ type RootQuery {
 
 type RootMutation {
   createCategory(categoryInput: CategoryInput): Category!
+  updateCategory(id: ID!, categoryInput: CategoryInput): Category!
+  deleteCategory(id: ID!, permanent: Boolean!): Boolean!
 }
 
 schema {

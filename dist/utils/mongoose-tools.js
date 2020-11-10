@@ -21,6 +21,14 @@ exports.softDeleteSchema = function (schema) {
             ],
         });
     };
+    schema.statics.findOneWithoutDeleted = function (filter) {
+        return this.findOne({
+            $or: [
+                __assign(__assign({}, filter), { deletedAt: { $exists: false } }),
+                __assign(__assign({}, filter), { deletedAt: { $in: [null, ""] } }),
+            ],
+        });
+    };
     schema.statics.softDeleteById = function (id) {
         return this.updateOne({ _id: id }, { $set: { deletedAt: new Date() } });
     };

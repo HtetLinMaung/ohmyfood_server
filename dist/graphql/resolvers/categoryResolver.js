@@ -66,15 +66,18 @@ exports.default = {
                             error.code = 401;
                             throw error;
                         }
-                        return [4 /*yield*/, Category_1.default.find().countDocuments()];
+                        return [4 /*yield*/, Category_1.default
+                                .findWithoutDeleted()
+                                .countDocuments()];
                     case 1:
                         totalRows = _b.sent();
-                        if (!(!page || !perPage || (!page && !perPage))) return [3 /*break*/, 3];
-                        return [4 /*yield*/, Category_1.default.find()];
+                        if (!(!page || !perPage)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, Category_1.default.findWithoutDeleted()];
                     case 2:
                         categories = _b.sent();
                         return [3 /*break*/, 5];
-                    case 3: return [4 /*yield*/, Category_1.default.find()
+                    case 3: return [4 /*yield*/, Category_1.default
+                            .findWithoutDeleted()
                             .skip((page - 1) * perPage)
                             .limit(perPage)];
                     case 4:
@@ -89,6 +92,32 @@ exports.default = {
                                 return (__assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_a = category.deletedAt) === null || _a === void 0 ? void 0 : _a.toISOString() }));
                             }),
                         }];
+                }
+            });
+        });
+    },
+    category: function (_a, req) {
+        var id = _a.id;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var error, category, error;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        return [4 /*yield*/, Category_1.default.findOneWithoutDeleted({ _id: id })];
+                    case 1:
+                        category = _c.sent();
+                        if (!category) {
+                            error = new Error("Category not found!");
+                            error.code = 404;
+                            throw error;
+                        }
+                        return [2 /*return*/, __assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_b = category.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
                 }
             });
         });
@@ -114,41 +143,7 @@ exports.default = {
                             error.code = 401;
                             throw error;
                         }
-                        errors = [];
-                        console.log(categoryInput);
-                        if (validator_1.default.isEmpty(categoryInput.name)) {
-                            errors.push({ message: "Category name is invalid!" });
-                        }
-                        if (!validator_1.default.isNumeric(categoryInput.price.toString())) {
-                            errors.push({ message: "Price is invalid!" });
-                        }
-                        if (!validator_1.default.isNumeric(categoryInput.discountPercent.toString())) {
-                            errors.push({ message: "Discount percent is invalid!" });
-                        }
-                        if (validator_1.default.isEmpty(categoryInput.openHour)) {
-                            errors.push({ message: "Open Hour is invalid!" });
-                        }
-                        if (validator_1.default.isEmpty(categoryInput.closeHour)) {
-                            errors.push({ message: "Close Hour is invalid!" });
-                        }
-                        if (validator_1.default.isEmpty(categoryInput.imageUrl)) {
-                            errors.push({ message: "Image is invalid!" });
-                        }
-                        if (!Array.isArray(categoryInput.tags) ||
-                            (categoryInput.tags.length > 0 &&
-                                !categoryInput.tags.every(function (v) { return typeof v == "string"; }))) {
-                            errors.push({ message: "Tags are invalid!" });
-                        }
-                        if (!Array.isArray(categoryInput.menus) ||
-                            (categoryInput.menus.length > 0 &&
-                                !categoryInput.menus.every(function (v) { return typeof v == "string"; }))) {
-                            errors.push({ message: "Menus are invalid!" });
-                        }
-                        if (!Array.isArray(categoryInput.types) ||
-                            (categoryInput.types.length > 0 &&
-                                !categoryInput.types.every(function (v) { return typeof v == "string"; }))) {
-                            errors.push({ message: "Types are invalid!" });
-                        }
+                        errors = getValidationResults(categoryInput);
                         if (errors.length > 0) {
                             error = new Error("Invalid input!");
                             error.code = 422;
@@ -175,5 +170,136 @@ exports.default = {
             });
         });
     },
+    updateCategory: function (_a, req) {
+        var id = _a.id, categoryInput = _a.categoryInput;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var error, user, error, errors, error, category, error;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        return [4 /*yield*/, User_1.default.findById(req.userId)];
+                    case 1:
+                        user = (_c.sent());
+                        if (user.role == "customer") {
+                            error = new Error("Unauthorized!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        errors = getValidationResults(categoryInput);
+                        if (errors.length > 0) {
+                            error = new Error("Invalid input!");
+                            error.code = 422;
+                            error.data = errors;
+                            throw error;
+                        }
+                        return [4 /*yield*/, Category_1.default.findOneWithoutDeleted({ _id: id })];
+                    case 2:
+                        category = _c.sent();
+                        if (!category) {
+                            error = new Error("Category not found!");
+                            error.code = 404;
+                            throw error;
+                        }
+                        category.name = categoryInput.name;
+                        category.price = categoryInput.price;
+                        category.discountPercent = categoryInput.discountPercent;
+                        category.availableTime = {
+                            openHour: categoryInput.openHour,
+                            closeHour: categoryInput.closeHour,
+                        };
+                        category.imageUrl = categoryInput.imageUrl;
+                        category.tags = categoryInput.tags;
+                        category.types = categoryInput.types;
+                        category.menus = categoryInput.menus;
+                        category.updatedAt = new Date();
+                        return [4 /*yield*/, category.save()];
+                    case 3:
+                        _c.sent();
+                        return [2 /*return*/, __assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_b = category.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
+                }
+            });
+        });
+    },
+    deleteCategory: function (_a, req) {
+        var id = _a.id, permanent = _a.permanent;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var error, user, error, category;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        return [4 /*yield*/, User_1.default.findById(req.userId)];
+                    case 1:
+                        user = (_b.sent());
+                        if (user.role == "customer") {
+                            error = new Error("Unauthorized!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        category = Category_1.default.findById(id);
+                        if (!category) {
+                            return [2 /*return*/, false];
+                        }
+                        if (!permanent) return [3 /*break*/, 3];
+                        return [4 /*yield*/, Category_1.default.findByIdAndDelete(id)];
+                    case 2:
+                        _b.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, Category_1.default.softDeleteById(id)];
+                    case 4:
+                        _b.sent();
+                        _b.label = 5;
+                    case 5: return [2 /*return*/, true];
+                }
+            });
+        });
+    },
+};
+var getValidationResults = function (categoryInput) {
+    var errors = [];
+    if (validator_1.default.isEmpty(categoryInput.name)) {
+        errors.push({ message: "Category name is invalid!" });
+    }
+    if (!validator_1.default.isNumeric(categoryInput.price.toString())) {
+        errors.push({ message: "Price is invalid!" });
+    }
+    if (!validator_1.default.isNumeric(categoryInput.discountPercent.toString())) {
+        errors.push({ message: "Discount percent is invalid!" });
+    }
+    if (validator_1.default.isEmpty(categoryInput.openHour)) {
+        errors.push({ message: "Open Hour is invalid!" });
+    }
+    if (validator_1.default.isEmpty(categoryInput.closeHour)) {
+        errors.push({ message: "Close Hour is invalid!" });
+    }
+    if (validator_1.default.isEmpty(categoryInput.imageUrl)) {
+        errors.push({ message: "Image is invalid!" });
+    }
+    if (!Array.isArray(categoryInput.tags) ||
+        (categoryInput.tags.length > 0 &&
+            !categoryInput.tags.every(function (v) { return typeof v == "string"; }))) {
+        errors.push({ message: "Tags are invalid!" });
+    }
+    if (!Array.isArray(categoryInput.menus) ||
+        (categoryInput.menus.length > 0 &&
+            !categoryInput.menus.every(function (v) { return typeof v == "string"; }))) {
+        errors.push({ message: "Menus are invalid!" });
+    }
+    if (!Array.isArray(categoryInput.types) ||
+        (categoryInput.types.length > 0 &&
+            !categoryInput.types.every(function (v) { return typeof v == "string"; }))) {
+        errors.push({ message: "Types are invalid!" });
+    }
+    return errors;
 };
 //# sourceMappingURL=categoryResolver.js.map
