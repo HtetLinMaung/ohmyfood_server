@@ -5,5 +5,6 @@ export default buildSchema(
   mergeSchema([
     importSchema("schemas/authSchema.gql"),
     importSchema("schemas/categorySchema.gql"),
+    importSchema("schemas/categoryTypeSchema.gql"),
   ])
 );

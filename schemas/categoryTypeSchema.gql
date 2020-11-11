@@ -1,0 +1,39 @@
+type CategoryType {
+  name: String!
+  imageUrl: String!
+  include: Boolean!
+  categories: [Category!]
+  deletedAt: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type CategoryTypes {
+  page: Int!
+  perPage: Int!
+  totalRows: Int!
+  categories: [CategoryType!]
+}
+
+input CategoryTypeInput {
+  name: String!
+  imageUrl: String!
+  include: Boolean!
+  categoryTypes: [String!]
+}
+
+type RootQuery {
+  categoryTypes(page: Int!, perPage: Int!): CategoryTypes!
+  categoryType(id: ID!): CategoryType!
+}
+
+type RootMutation {
+  createCategoryType(categoryTypeInput: CategoryTypeInput): CategoryType!
+  updateCategoryType(id: ID!, categoryTypeInput: CategoryTypeInput): CategoryType!
+  deleteCategoryType(id: ID!, permanent: Boolean!): Boolean!
+}
+
+schema {
+  query: RootQuery
+  mutation: RootMutation
+}

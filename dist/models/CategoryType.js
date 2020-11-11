@@ -11,6 +11,10 @@ var categoryTypeSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    include: {
+        type: Boolean,
+        default: false,
+    },
     categories: [
         {
             ref: "categories",

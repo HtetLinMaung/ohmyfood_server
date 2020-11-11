@@ -44,7 +44,6 @@ exports.mergeSchema = function (schemaArray) {
             .replace(/schema\s+{\s+((\w+:\s+\w+!?\s+)+)}/, "")
             .replace(/type\s+RootMutation\s+{((\s+\w+(\(.+\))?:\s+\w+!?)+\s+)}/, "");
     }
-    console.log(gql);
     return gql;
 };
 //# sourceMappingURL=graphql-tools.js.map
