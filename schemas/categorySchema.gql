@@ -7,7 +7,7 @@ type Category {
   closeHour: String!
   imageUrl: String!
   tags: [String!]
-  types: [String!]
+  types: [CategoryType!]
   menus: [String!]
   deletedAt: String
   createdAt: String!

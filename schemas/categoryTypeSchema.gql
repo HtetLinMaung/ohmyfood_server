@@ -1,4 +1,5 @@
 type CategoryType {
+  _id: String!
   name: String!
   imageUrl: String!
   include: Boolean!
@@ -12,14 +13,14 @@ type CategoryTypes {
   page: Int!
   perPage: Int!
   totalRows: Int!
-  categories: [CategoryType!]
+  categoryTypes: [CategoryType!]
 }
 
 input CategoryTypeInput {
   name: String!
   imageUrl: String!
   include: Boolean!
-  categoryTypes: [String!]
+  categories: [String!]
 }
 
 type RootQuery {

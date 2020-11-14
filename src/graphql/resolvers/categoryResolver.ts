@@ -2,6 +2,7 @@ import { CategoryInput } from "../../dtos/categoryDto";
 import validator from "validator";
 import User from "../../models/User";
 import Category from "../../models/Category";
+import CategoryType from "../../models/CategoryType";
 
 export default {
   categories: async (
@@ -18,10 +19,10 @@ export default {
       .findWithoutDeleted()
       .countDocuments();
     if (!page || !perPage) {
-      categories = await (<any>Category).findWithoutDeleted();
+      categories = await (<any>Category).findWithoutDeleted({}, "types");
     } else {
       categories = await (<any>Category)
-        .findWithoutDeleted()
+        .findWithoutDeleted({}, "types")
         .skip((page - 1) * perPage)
         .limit(perPage);
     }
@@ -44,7 +45,11 @@ export default {
       error.code = 401;
       throw error;
     }
-    const category = await (<any>Category).findOneWithoutDeleted({ _id: id });
+    const category = await (<any>Category).findOneWithoutDeleted(
+      { _id: id },
+      "types"
+    );
+
     if (!category) {
       const error: any = new Error("Category not found!");
       error.code = 404;
@@ -93,6 +98,10 @@ export default {
     category.types = categoryInput.types;
     category.menus = categoryInput.menus;
     await category.save();
+    await CategoryType.updateMany(
+      { _id: { $in: category.types } },
+      { $push: { categories: category._id } }
+    );
     return {
       ...category._doc,
       createdAt: category.createdAt.toISOString(),
@@ -123,7 +132,7 @@ export default {
       error.data = errors;
       throw error;
     }
-    const category = await (<any>Category).findOneWithoutDeleted({ _id: id });
+    const category = await Category.findById(id);
     if (!category) {
       const error: any = new Error("Category not found!");
       error.code = 404;
@@ -142,6 +151,12 @@ export default {
     category.menus = categoryInput.menus;
     category.updatedAt = new Date();
     await category.save();
+    await CategoryType.updateMany({}, { $pull: { categories: id } });
+    await CategoryType.updateMany(
+      { _id: { $in: category.types } },
+      { $push: { categories: id } }
+    );
+
     return {
       ...category._doc,
       createdAt: category.createdAt.toISOString(),

@@ -53,6 +53,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var validator_1 = __importDefault(require("validator"));
 var User_1 = __importDefault(require("../../models/User"));
 var Category_1 = __importDefault(require("../../models/Category"));
+var CategoryType_1 = __importDefault(require("../../models/CategoryType"));
 exports.default = {
     categories: function (_a, req) {
         var page = _a.page, perPage = _a.perPage;
@@ -72,12 +73,12 @@ exports.default = {
                     case 1:
                         totalRows = _b.sent();
                         if (!(!page || !perPage)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, Category_1.default.findWithoutDeleted()];
+                        return [4 /*yield*/, Category_1.default.findWithoutDeleted({}, "types")];
                     case 2:
                         categories = _b.sent();
                         return [3 /*break*/, 5];
                     case 3: return [4 /*yield*/, Category_1.default
-                            .findWithoutDeleted()
+                            .findWithoutDeleted({}, "types")
                             .skip((page - 1) * perPage)
                             .limit(perPage)];
                     case 4:
@@ -109,7 +110,7 @@ exports.default = {
                             error.code = 401;
                             throw error;
                         }
-                        return [4 /*yield*/, Category_1.default.findOneWithoutDeleted({ _id: id })];
+                        return [4 /*yield*/, Category_1.default.findOneWithoutDeleted({ _id: id }, "types")];
                     case 1:
                         category = _c.sent();
                         if (!category) {
@@ -165,6 +166,9 @@ exports.default = {
                         return [4 /*yield*/, category.save()];
                     case 2:
                         _c.sent();
+                        return [4 /*yield*/, CategoryType_1.default.updateMany({ _id: { $in: category.types } }, { $push: { categories: category._id } })];
+                    case 3:
+                        _c.sent();
                         return [2 /*return*/, __assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_b = category.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
                 }
             });
@@ -198,7 +202,7 @@ exports.default = {
                             error.data = errors;
                             throw error;
                         }
-                        return [4 /*yield*/, Category_1.default.findOneWithoutDeleted({ _id: id })];
+                        return [4 /*yield*/, Category_1.default.findById(id)];
                     case 2:
                         category = _c.sent();
                         if (!category) {
@@ -220,6 +224,12 @@ exports.default = {
                         category.updatedAt = new Date();
                         return [4 /*yield*/, category.save()];
                     case 3:
+                        _c.sent();
+                        return [4 /*yield*/, CategoryType_1.default.updateMany({}, { $pull: { categories: id } })];
+                    case 4:
+                        _c.sent();
+                        return [4 /*yield*/, CategoryType_1.default.updateMany({ _id: { $in: category.types } }, { $push: { categories: id } })];
+                    case 5:
                         _c.sent();
                         return [2 /*return*/, __assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_b = category.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
                 }

@@ -53,6 +53,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var User_1 = __importDefault(require("../../models/User"));
 var validator_1 = __importDefault(require("validator"));
 var CategoryType_1 = __importDefault(require("../../models/CategoryType"));
+var Category_1 = __importDefault(require("../../models/Category"));
 exports.default = {
     categoryTypes: function (_a, req) {
         var page = _a.page, perPage = _a.perPage;
@@ -72,15 +73,12 @@ exports.default = {
                     case 1:
                         totalRows = _b.sent();
                         if (!(!page || !perPage)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, CategoryType_1.default
-                                .findWithoutDeleted()
-                                .populate("categories")];
+                        return [4 /*yield*/, CategoryType_1.default.findWithoutDeleted({}, "categories")];
                     case 2:
                         categoryTypes = _b.sent();
                         return [3 /*break*/, 5];
                     case 3: return [4 /*yield*/, CategoryType_1.default
-                            .findWithoutDeleted()
-                            .populate("categories")
+                            .findWithoutDeleted({}, "categories")
                             .skip((page - 1) * perPage)
                             .limit(perPage)];
                     case 4:
@@ -95,6 +93,32 @@ exports.default = {
                                 return (__assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_a = categoryType.deletedAt) === null || _a === void 0 ? void 0 : _a.toISOString() }));
                             }),
                         }];
+                }
+            });
+        });
+    },
+    categoryType: function (_a, req) {
+        var id = _a.id;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var error, categoryType, error;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        return [4 /*yield*/, CategoryType_1.default.findOneWithoutDeleted({ _id: id }, "categories")];
+                    case 1:
+                        categoryType = _c.sent();
+                        if (!categoryType) {
+                            error = new Error("Category Type not found!");
+                            error.code = 404;
+                            throw error;
+                        }
+                        return [2 /*return*/, __assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_b = categoryType.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
                 }
             });
         });
@@ -131,7 +155,102 @@ exports.default = {
                         return [4 /*yield*/, categoryType.save()];
                     case 2:
                         _c.sent();
+                        return [4 /*yield*/, Category_1.default.updateMany({ _id: { $in: categoryType.categories } }, { $push: { types: categoryType._id } })];
+                    case 3:
+                        _c.sent();
                         return [2 /*return*/, __assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_b = categoryType.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
+                }
+            });
+        });
+    },
+    updateCategoryType: function (_a, req) {
+        var id = _a.id, categoryTypeInput = _a.categoryTypeInput;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var error, user, error, errors, error, categoryType, error;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        return [4 /*yield*/, User_1.default.findById(req.userId)];
+                    case 1:
+                        user = (_c.sent());
+                        if (user.role == "customer") {
+                            error = new Error("Unauthorized!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        errors = getValidationResults(categoryTypeInput);
+                        if (errors.length > 0) {
+                            error = new Error("Invalid input!");
+                            error.code = 422;
+                            error.data = errors;
+                            throw error;
+                        }
+                        return [4 /*yield*/, CategoryType_1.default.findById(id)];
+                    case 2:
+                        categoryType = _c.sent();
+                        if (!categoryType) {
+                            error = new Error("Category Type not found!");
+                            error.code = 404;
+                            throw error;
+                        }
+                        categoryType.name = categoryTypeInput.name;
+                        categoryType.imageUrl = categoryTypeInput.imageUrl;
+                        categoryType.include = categoryTypeInput.include;
+                        categoryType.categories = categoryTypeInput.categories;
+                        return [4 /*yield*/, categoryType.save()];
+                    case 3:
+                        _c.sent();
+                        return [4 /*yield*/, Category_1.default.updateMany({}, { $pull: { types: id } })];
+                    case 4:
+                        _c.sent();
+                        return [4 /*yield*/, Category_1.default.updateMany({ _id: { $in: categoryType.categories } }, { $push: { types: id } })];
+                    case 5:
+                        _c.sent();
+                        return [2 /*return*/, __assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_b = categoryType.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
+                }
+            });
+        });
+    },
+    deleteCategoryType: function (_a, req) {
+        var id = _a.id, permanent = _a.permanent;
+        return __awaiter(void 0, void 0, void 0, function () {
+            var error, user, error, categoryType;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        if (!req.isAuth) {
+                            error = new Error("Not Authenticated!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        return [4 /*yield*/, User_1.default.findById(req.userId)];
+                    case 1:
+                        user = (_b.sent());
+                        if (user.role == "customer") {
+                            error = new Error("Unauthorized!");
+                            error.code = 401;
+                            throw error;
+                        }
+                        categoryType = CategoryType_1.default.findById(id);
+                        if (!categoryType) {
+                            return [2 /*return*/, false];
+                        }
+                        if (!permanent) return [3 /*break*/, 3];
+                        return [4 /*yield*/, CategoryType_1.default.findByIdAndDelete(id)];
+                    case 2:
+                        _b.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, CategoryType_1.default.softDeleteById(id)];
+                    case 4:
+                        _b.sent();
+                        _b.label = 5;
+                    case 5: return [2 /*return*/, true];
                 }
             });
         });
