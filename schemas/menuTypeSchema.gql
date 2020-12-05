@@ -1,0 +1,34 @@
+type MenuType {
+  _id: String!
+  name: String!
+  menus: [Menu!]
+  createdAt: String!
+  updatedAt: String!
+  deletedAt: String!
+}
+
+type MenuTypes {
+  page: Int!
+  perPage: Int!
+  totalRows: Int!
+  menuTypes: [MenuType!]
+}
+
+input MenuTypeInput {
+    name: String!
+  menus: [String!]
+}
+
+type RootQuery {
+    menuTypes(page: Int!, perPage: Int!): MenuTypes!
+    menuType(id: ID!): MenuType!
+}
+
+type RootMutation {
+    createMenuType
+}
+
+schema {
+  query: RootQuery
+  mutation: RootMutation
+}

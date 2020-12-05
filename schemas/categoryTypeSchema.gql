@@ -4,7 +4,7 @@ type CategoryType {
   imageUrl: String!
   include: Boolean!
   categories: [Category!]
-  deletedAt: String!
+  deletedAt: String
   createdAt: String!
   updatedAt: String!
 }

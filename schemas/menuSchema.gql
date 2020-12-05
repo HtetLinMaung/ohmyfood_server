@@ -1,0 +1,48 @@
+type Menu {
+  _id: String!
+  name: String!
+  description: String!
+  price: Float!
+  discountPercent: Float!
+  imageUrl: String!
+  categories: [Category!]
+  menuTypes: [MenuType!]
+  ingredients: [Ingrediant!]
+  createdAt: String!
+  updatedAt: String!
+  deletedAt: String
+}
+
+type Menus {
+  page: Int!
+  perPage: Int!
+  totalRows: Int!
+  menus: [Menu!]
+}
+
+input MenuInput {
+  name: String!
+  description: String!
+  price: Float!
+  discountPercent: Float!
+  imageUrl: String!
+  categories: [String!]
+  menuTypes: [String!]
+  ingredients: [String!]
+}
+
+type RootQuery {
+  menus(page: Int!, perPage: Int!): Menus!
+  menu(id: ID!): Menu!
+}
+
+type RootMutation {
+  createMenu(menuInput: MenuInput): Menu!
+  updateMenu(id: ID!, menuInput: MenuInput): Menu!
+  deleteMenu(id: ID!, permanent: Boolean!): Boolean!
+}
+
+schema {
+  query: RootQuery
+  mutation: RootMutation
+}

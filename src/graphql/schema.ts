@@ -6,5 +6,6 @@ export default buildSchema(
     importSchema("schemas/authSchema.gql"),
     importSchema("schemas/categorySchema.gql"),
     importSchema("schemas/categoryTypeSchema.gql"),
+    importSchema("schemas/menuSchema.gql"),
   ])
 );

@@ -1,5 +1,20 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 import { softDeleteSchema } from "../utils/mongoose-tools";
+
+interface IMenu extends Document {
+  _doc: any;
+  name: string;
+  description: string;
+  price: number;
+  discountPercent: number;
+  imageUrl: string;
+  categories: string[];
+  menuTypes: string[];
+  ingredients: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}
 
 const menuSchema = new Schema({
   name: {
@@ -45,4 +60,4 @@ const menuSchema = new Schema({
 
 softDeleteSchema(menuSchema);
 
-export default model("menus", menuSchema);
+export default model<IMenu>("menus", menuSchema);
