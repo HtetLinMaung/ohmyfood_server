@@ -16,6 +16,8 @@ var dotenv_1 = __importDefault(require("dotenv"));
 var uploadImage_1 = __importDefault(require("./middlewares/uploadImage"));
 var beforeImageUpload_1 = __importDefault(require("./middlewares/beforeImageUpload"));
 var cors_1 = __importDefault(require("cors"));
+var path_1 = __importDefault(require("path"));
+var constants_1 = require("./constants");
 dotenv_1.default.config();
 var PORT = process.env.PORT || 3000;
 var app = express_1.default();
@@ -34,10 +36,14 @@ var upload = multer_1.default({
 });
 app.use(cors_1.default());
 app.use(express_1.default.json());
+app.use(express_1.default.static(path_1.default.join(constants_1.rootDir, "build")));
 app.use(auth_1.default);
 app.use("/upload-image", beforeImageUpload_1.default);
 app.use(upload.single("image"));
 app.post("/upload-image", uploadImage_1.default);
+app.get("/*", function (_, res) {
+    res.sendFile(path_1.default.join(constants_1.rootDir, "build", "index.html"));
+});
 app.use("/graphql", express_graphql_1.graphqlHTTP({
     schema: schema_1.default,
     rootValue: resolver_1.default,

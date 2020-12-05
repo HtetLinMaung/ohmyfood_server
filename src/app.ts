@@ -11,6 +11,8 @@ import dotenv from "dotenv";
 import uploadImage from "./middlewares/uploadImage";
 import beforeImageUpload from "./middlewares/beforeImageUpload";
 import cors from "cors";
+import path from "path";
+import { rootDir } from "./constants";
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -33,10 +35,15 @@ const upload = multer({
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(rootDir, "build")));
 app.use(auth);
 app.use("/upload-image", beforeImageUpload);
 app.use(upload.single("image"));
 app.post("/upload-image", uploadImage);
+
+app.get("/*", (_, res) => {
+  res.sendFile(path.join(rootDir, "build", "index.html"));
+});
 
 app.use(
   "/graphql",
