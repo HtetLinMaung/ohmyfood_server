@@ -1,0 +1,25 @@
+type Ingredient {
+  _id: String!
+  name: String!
+}
+
+type RootMutation {
+ 
+}
+
+type Ingredients {
+  page: Int!
+  perPage: Int!
+  totalRows: Int!
+  menuTypes: [Ingredient!]
+}
+
+type RootQuery {
+  ingredients(page: Int!, perPage: Int!): Ingredients!
+  Ingredient(id: ID!): Ingredient!
+}
+
+schema {
+  query: RootQuery
+  mutation: RootMutation
+}

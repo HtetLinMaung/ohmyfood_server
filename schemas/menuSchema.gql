@@ -7,7 +7,7 @@ type Menu {
   imageUrl: String!
   categories: [Category!]
   menuTypes: [MenuType!]
-  ingredients: [Ingrediant!]
+  ingredients: [Ingredient!]
   createdAt: String!
   updatedAt: String!
   deletedAt: String
