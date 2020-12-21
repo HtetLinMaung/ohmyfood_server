@@ -11,6 +11,8 @@ interface IMenu extends Document {
   categories: string[];
   menuTypes: string[];
   ingredients: string[];
+  isOutOfStock: boolean;
+  isAvailable: Date;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;
@@ -55,6 +57,11 @@ const menuSchema = new Schema({
       type: Schema.Types.ObjectId,
     },
   ],
+  isOutOfStock: {
+    type: Boolean,
+    default: false,
+  },
+  availableAt: Date,
   deletedAt: Date,
 });
 

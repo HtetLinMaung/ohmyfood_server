@@ -41,6 +41,11 @@ var menuSchema = new mongoose_1.Schema({
             type: mongoose_1.Schema.Types.ObjectId,
         },
     ],
+    isOutOfStock: {
+        type: Boolean,
+        default: false,
+    },
+    availableAt: Date,
     deletedAt: Date,
 });
 mongoose_tools_1.softDeleteSchema(menuSchema);

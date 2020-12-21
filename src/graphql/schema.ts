@@ -4,8 +4,8 @@ import { importSchema, mergeSchema } from "../utils/graphql-tools";
 export default buildSchema(
   mergeSchema([
     importSchema("schemas/authSchema.gql"),
-    // importSchema("schemas/categorySchema.gql"),
-    // importSchema("schemas/categoryTypeSchema.gql"),
+    importSchema("schemas/categorySchema.gql"),
+    importSchema("schemas/categoryTypeSchema.gql"),
     // importSchema("schemas/menuSchema.gql"),
     // importSchema("schemas/ingredientSchema.gql"),
   ])
