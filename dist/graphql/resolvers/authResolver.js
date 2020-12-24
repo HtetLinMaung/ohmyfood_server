@@ -116,6 +116,7 @@ exports.default = {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        console.log(phone);
                         errors = [];
                         if (!validator_1.default.isLength(password, { min: 6 })) {
                             errors.push({ message: "Password too short!" });
