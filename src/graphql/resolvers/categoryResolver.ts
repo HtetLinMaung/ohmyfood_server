@@ -36,6 +36,8 @@ export default {
         createdAt: category.createdAt.toISOString(),
         updatedAt: category.updatedAt.toISOString(),
         deletedAt: category.deletedAt?.toISOString(),
+        openHour: category.availableTime.openHour,
+        closeHour: category.availableTime.closeHour,
       })),
     };
   },
@@ -60,6 +62,8 @@ export default {
       createdAt: category.createdAt.toISOString(),
       updatedAt: category.updatedAt.toISOString(),
       deletedAt: category.deletedAt?.toISOString(),
+      openHour: category.availableTime.openHour,
+      closeHour: category.availableTime.closeHour,
     };
   },
   createCategory: async (

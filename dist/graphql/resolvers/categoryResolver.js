@@ -90,7 +90,7 @@ exports.default = {
                             totalRows: totalRows,
                             categories: categories.map(function (category) {
                                 var _a;
-                                return (__assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_a = category.deletedAt) === null || _a === void 0 ? void 0 : _a.toISOString() }));
+                                return (__assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_a = category.deletedAt) === null || _a === void 0 ? void 0 : _a.toISOString(), openHour: category.availableTime.openHour, closeHour: category.availableTime.closeHour }));
                             }),
                         }];
                 }
@@ -118,7 +118,7 @@ exports.default = {
                             error.code = 404;
                             throw error;
                         }
-                        return [2 /*return*/, __assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_b = category.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
+                        return [2 /*return*/, __assign(__assign({}, category._doc), { createdAt: category.createdAt.toISOString(), updatedAt: category.updatedAt.toISOString(), deletedAt: (_b = category.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString(), openHour: category.availableTime.openHour, closeHour: category.availableTime.closeHour })];
                 }
             });
         });

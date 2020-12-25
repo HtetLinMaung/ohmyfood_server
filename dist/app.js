@@ -51,7 +51,6 @@ app.use("/graphql", express_graphql_1.graphqlHTTP({
     customFormatErrorFn: function (err) {
         var originalError = err.originalError;
         if (!originalError) {
-            console.log(err);
             return err;
         }
         var data = originalError.data;
