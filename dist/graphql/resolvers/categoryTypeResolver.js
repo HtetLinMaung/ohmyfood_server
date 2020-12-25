@@ -90,7 +90,7 @@ exports.default = {
                             totalRows: totalRows,
                             categoryTypes: categoryTypes.map(function (categoryType) {
                                 var _a;
-                                return (__assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_a = categoryType.deletedAt) === null || _a === void 0 ? void 0 : _a.toISOString() }));
+                                return (__assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_a = categoryType.deletedAt) === null || _a === void 0 ? void 0 : _a.toISOString(), categories: categoryType.categories.map(function (category) { return (__assign(__assign({}, category._doc), { openHour: category.availableTime.openHour, closeHour: category.availableTime.closeHour })); }) }));
                             }),
                         }];
                 }
@@ -118,7 +118,7 @@ exports.default = {
                             error.code = 404;
                             throw error;
                         }
-                        return [2 /*return*/, __assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_b = categoryType.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString() })];
+                        return [2 /*return*/, __assign(__assign({}, categoryType._doc), { createdAt: categoryType.createdAt.toISOString(), updatedAt: categoryType.updatedAt.toISOString(), deletedAt: (_b = categoryType.deletedAt) === null || _b === void 0 ? void 0 : _b.toISOString(), categories: categoryType.categories.map(function (category) { return (__assign(__assign({}, category._doc), { openHour: category.availableTime.openHour, closeHour: category.availableTime.closeHour })); }) })];
                 }
             });
         });

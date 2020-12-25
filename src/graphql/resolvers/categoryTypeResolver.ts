@@ -44,6 +44,11 @@ export default {
         createdAt: categoryType.createdAt.toISOString(),
         updatedAt: categoryType.updatedAt.toISOString(),
         deletedAt: categoryType.deletedAt?.toISOString(),
+        categories: categoryType.categories.map((category: any) => ({
+          ...category._doc,
+          openHour: category.availableTime.openHour,
+          closeHour: category.availableTime.closeHour,
+        })),
       })),
     };
   },
@@ -68,6 +73,11 @@ export default {
       createdAt: categoryType.createdAt.toISOString(),
       updatedAt: categoryType.updatedAt.toISOString(),
       deletedAt: categoryType.deletedAt?.toISOString(),
+      categories: categoryType.categories.map((category: any) => ({
+        ...category._doc,
+        openHour: category.availableTime.openHour,
+        closeHour: category.availableTime.closeHour,
+      })),
     };
   },
   createCategoryType: async (
