@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node dist/app",
     "dev": "nodemon dist/app",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "deploy": "git add --all && git commit -am 'deploy' && git push && docker build -t htetlinmaung/ohmyfood_webserver . && docker push htetlinmaung/ohmyfood_webserver"
   },
   "keywords": [],
   "author": "",
