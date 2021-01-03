@@ -7,7 +7,7 @@
     "start": "node dist/app",
     "dev": "nodemon dist/app",
     "watch": "tsc -w",
-    "deploy": "git add --all && git commit -am 'deploy' && git push && docker build -t htetlinmaung/ohmyfood_webserver . && docker push htetlinmaung/ohmyfood_webserver"
+    "deploy": "cp -R ~/Documents/practice/react/ohmyfood_web/build . && git add --all && git commit -am 'deploy' && git push && docker build -t htetlinmaung/ohmyfood_webserver . && docker push htetlinmaung/ohmyfood_webserver"
   },
   "keywords": [],
   "author": "",
